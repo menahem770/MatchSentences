@@ -1,0 +1,11 @@
+{
+  "name": "node-service",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "*",
+    "jade": "*",
+    "mongodb": "^2.2.22",
+    "body-parser": "*"
+  }
+}
