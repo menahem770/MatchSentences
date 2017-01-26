@@ -6,6 +6,7 @@ var http = require("http"),
     Server = require('mongodb').Server,
     bodyParser = require('body-parser'),
     CollectionDriver = require('./collectionDriver').CollectionDriver;
+    MatchSentences = require('./matchSentences').matchSentences;
 
 var app = express();
 app.set('port', process.env.PORT || 8081);
@@ -41,13 +42,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/:collection', function(req, res) { //A
    var params = req.params; //B
    collectionDriver.findAll(req.params.collection, function(error, objs) { //C
-    	  if (error) { res.send(400, error); } //D
+          if (error) { res.status(400).send(error); } //D
 	      else { 
 	          if (req.accepts('html')) { //E
     	          res.render('data',{objects: objs, collection: req.params.collection}); //F
               } else {
 	          res.set('Content-Type','application/json'); //G
-                  res.send(200, objs); //H
+                  res.status(200).send(objs); //H
               }
          }
    	});
@@ -59,21 +60,39 @@ app.get('/:collection/:entity', function(req, res) { //I
    var collection = params.collection;
    if (entity) {
        collectionDriver.get(collection, entity, function(error, objs) { //J
-          if (error) { res.send(400, error); }
-          else { res.send(200, objs); } //K
+          if (error) { res.status(400).send(error); }
+          else { res.status(200).send(objs); } //K
        });
    } else {
-      res.send(400, {error: 'bad url', url: req.url});
+      res.status(400).send({error: 'bad url', url: req.url});
    }
 });
 
-app.post('/:collection', function(req, res) { //A
+app.post('/:collection', function(req, res) {
     var object = req.body;
     var collection = req.params.collection;
     collectionDriver.save(collection, object, function(err,docs) {
-          if (err) { res.send(400, err); } 
-          else { res.send(201, docs); } //B
+          if (err) { res.status(400).send(err); } 
+          else { res.status(201).send(docs); }
      });
+});
+
+app.get('/matchSentence/:collectionName/:sentance', function(req, res) {
+    var sentence = req.params.sentance;
+    var collectionName = req.params.collectionName;
+    collectionDriver.findAll(collectionName, function(error, collection) {
+        if (error) { res.status(400).send(error); }
+        else { 
+            var result = MatchSentences(sentence,collection)
+            collectionDriver.get(collectionName,result.index, function(error, match){
+                if (error) { res.status(400).send(error); }
+                else {
+                    match.distance = result.dist;
+                    res.status(200).send(match);
+                }
+            });
+        }
+   	});
 });
 
 app.use(function (req,res) { //1
