@@ -23,34 +23,33 @@ MongoClient.connect(url,function(err, db) {
   console.log("Connected correctly to server");
   
   collectionDriver = new CollectionDriver(db);
-  //db.close();
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/:collection', function(req, res) { //A
-   var params = req.params; //B
-   collectionDriver.findAll(req.params.collection, function(error, objs) { //C
-          if (error) { res.status(400).send(error); } //D
+app.get('/:collection', function(req, res) {
+   var params = req.params;
+   collectionDriver.findAll(req.params.collection, function(error, objs) {
+          if (error) { res.status(400).send(error); }
 	      else { 
-	          if (req.accepts('html')) { //E
-    	          res.render('data',{objects: objs, collection: req.params.collection}); //F
+	          if (req.accepts('html')) {
+    	          res.render('data',{objects: objs, collection: req.params.collection});
               } else {
-	          res.set('Content-Type','application/json'); //G
-                  res.status(200).send(objs); //H
+	          res.set('Content-Type','application/json');
+                  res.status(200).send(objs);
               }
          }
    	});
 });
  
-app.get('/:collection/:entity', function(req, res) { //I
+app.get('/:collection/:entity', function(req, res) {
    var params = req.params;
    var entity = params.entity;
    var collection = params.collection;
    if (entity) {
-       collectionDriver.get(collection, entity, function(error, objs) { //J
+       collectionDriver.get(collection, entity, function(error, objs) {
           if (error) { res.status(400).send(error); }
-          else { res.status(200).send(objs); } //K
+          else { res.status(200).send(objs); }
        });
    } else {
       res.status(400).send({error: 'bad url', url: req.url});
@@ -84,11 +83,13 @@ app.get('/matchSentence/:collectionName/:sentance', function(req, res) {
    	});
 });
 
-app.use(function (req,res) { //1
-    res.render('404', {url:req.url}); //2
+app.use(function (req,res) {
+    res.render('404', {url:req.url});
 });
+
 
 
 app.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
