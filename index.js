@@ -14,13 +14,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
 
-var mongoHost = 'localHost'; //A
-var mongoPort = 27017; 
 var url = 'mongodb://localhost:27017/MyDatabase';
+//var url = process.env.DB;
 var collectionDriver;
  
-var mongoClient = new MongoClient(new Server(mongoHost, mongoPort));
-mongoClient.connect(url,function(err, db) {
+MongoClient.connect(url,function(err, db) {
   assert.equal(null, err);
   console.log("Connected correctly to server");
   
