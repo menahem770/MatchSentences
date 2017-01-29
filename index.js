@@ -2,8 +2,7 @@ var http = require("http"),
     app = require('./controllers').app,
     MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
-    Server = require('mongodb').Server
-    bodyParser
+    Server = require('mongodb').Server;
 
 var mongoHost = 'localHost'; //A
 var mongoPort = 27017; 
@@ -16,7 +15,7 @@ mongoClient.connect(url,function(err, db) {
   console.log("Connected correctly to server");
   
   collectionDriver = new CollectionDriver(db);
-  // db.close();
+  //db.close();
 });
 
 
